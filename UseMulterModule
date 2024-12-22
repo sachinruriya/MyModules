@@ -1,0 +1,36 @@
+  
+async function createprd(req, res) {
+    upload.single("file")(req, res, async function (err) {
+        if (err) {
+          return res.status(400).json({ error: err.message }); 
+        }
+    
+        try {
+          const { prdname, prdprice } = req.body;
+    
+          
+          if (!prdname || !prdprice) {
+            return res.status(400).json({ error: "Product name and price are required." });
+          }
+    
+          if (!req.file) {
+            return res.status(400).json({ error: "Product image is required." });
+          }
+    
+          
+          const newProduct = await product.create({
+            name: prdname,
+            price: prdprice,
+            image: req.file.path, 
+          });
+    
+          return res.status(201).json({
+            message: "Product created successfully!",
+            data: newProduct,
+          });
+        } catch (error) {
+          console.error("Error creating product:", error);
+          return res.status(500).json({ error: "An error occurred while creating the product." });
+        }
+      });
+    }
